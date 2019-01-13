@@ -31,7 +31,8 @@ namespace Sanderling.ABot.Bot.Task
 
 				var probeScannerWindow = memoryMeasurement?.WindowProbeScanner?.FirstOrDefault();
 
-				var r = new Random();
+				var seed = Int32.Parse(DateTime.Now.ToString("mm"));
+				var r = new Random(seed);
 
 				// Randomize which anom will be chosen to confuse bad guys
 				var scanResultCombatSite =
