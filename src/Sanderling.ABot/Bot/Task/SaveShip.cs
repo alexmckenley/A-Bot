@@ -66,7 +66,11 @@ namespace Sanderling.ABot.Bot.Task
 
 				var sessionDurationSufficient = AllowRoamSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
 
-				if (sessionDurationSufficient && (charIsLocatedInHighsec || ChatIsClean(localChatWindow)))
+				var shieldHitpointPercent = memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Shield / 10;
+
+				var safeShieldHitpoints = shieldHitpointPercent > 20; // Warpoff shield ercent
+
+				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || safeShieldHitpoints) && (charIsLocatedInHighsec || ChatIsClean(localChatWindow)))
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
