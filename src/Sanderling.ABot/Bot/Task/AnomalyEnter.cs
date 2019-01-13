@@ -50,12 +50,19 @@ namespace Sanderling.ABot.Bot.Task
 					};
 
 				if (null != scanResultCombatSite)
+				{
+					// Disable Afterburner
+					var subsetModuleAfterburner =
+						memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
+					yield return bot.EnsureIsInactive(subsetModuleAfterburner);
 					yield return new MenuPathTask
 					{
 						RootUIElement = scanResultCombatSite,
 						Bot = bot,
 						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { @"within 50 km" } },
 					};
+				}
+
 			}
 		}
 

@@ -7,6 +7,7 @@ using Sanderling.Interface.MemoryStruct;
 using Sanderling.Parse;
 using System;
 using Bib3;
+using WindowsInput.Native;
 
 namespace Sanderling.ABot.Bot.Task
 {
@@ -49,7 +50,8 @@ namespace Sanderling.ABot.Bot.Task
 				// Recall drones before retreating
 				if (droneInLocalSpaceCount > 0 && !droneInLocalSpaceReturning)
 				{
-					yield return droneGroupInLocalSpace.ClickMenuEntryByRegexPattern(Bot, @"return.*bay");
+					var returnDrones = new[] { VirtualKeyCode.SHIFT, VirtualKeyCode.VK_R };
+					yield return new BotTask() { Effects = new[] { returnDrones.KeyboardPressCombined() } };
 				}
 
 				if (droneInLocalSpaceCount > 0 && (memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text == @"Aligning") ?? false))

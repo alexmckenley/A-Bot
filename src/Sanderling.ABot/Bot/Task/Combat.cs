@@ -92,7 +92,6 @@ namespace Sanderling.ABot.Bot.Task
 						var fKey = VirtualKeyCode.VK_F;
 						yield return new BotTask { Effects = new[] { fKey.KeyboardPress() } };
 					}
-					//	yield return droneGroupInLocalSpace.ClickMenuEntryByRegexPattern(bot, @"engage");
 				}
 
 				var overviewEntryLockTarget =
@@ -103,7 +102,10 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (!(0 < listOverviewEntryToAttack?.Length))
 					if (0 < droneInLocalSpaceCount)
-						yield return droneGroupInLocalSpace.ClickMenuEntryByRegexPattern(bot, @"return.*bay");
+					{
+						var returnDrones = new[] { VirtualKeyCode.SHIFT, VirtualKeyCode.VK_R };
+						yield return new BotTask() { Effects = new[] { returnDrones.KeyboardPressCombined() } };
+					}
 					else
 						Completed = true;
 			}
