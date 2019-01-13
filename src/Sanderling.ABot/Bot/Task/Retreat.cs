@@ -45,7 +45,7 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceReturning =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
 
-				var retreatAction = droneInLocalSpaceCount > 0 ? @"align to" : @"dock";
+				var retreatAction = droneInLocalSpaceCount > 0 ? @"align to" : @"^dock";
 				// Recall drones before retreating
 				if (droneInLocalSpaceCount > 0 && !droneInLocalSpaceReturning)
 				{
