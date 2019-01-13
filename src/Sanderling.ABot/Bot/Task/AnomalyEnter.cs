@@ -14,7 +14,7 @@ namespace Sanderling.ABot.Bot.Task
 		public Bot bot;
 
 		static public bool AnomalySuitableGeneral(Interface.MemoryStruct.IListEntry scanResult) =>
-			scanResult?.CellValueFromColumnHeader("Name")?.RegexMatchSuccessIgnoreCase("forsaken") ?? false;
+			scanResult?.CellValueFromColumnHeader("Name")?.RegexMatchSuccessIgnoreCase("forsaken rally") ?? false;
 
 		public IEnumerable<IBotTask> Component
 		{
