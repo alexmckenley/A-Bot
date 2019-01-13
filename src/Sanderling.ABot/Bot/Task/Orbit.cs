@@ -27,7 +27,12 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 
 				if (memoryMeasurement.ShipUi.Indication.ManeuverType == ShipManeuverTypeEnum.Orbit)
+				{
+					var subsetModuleAfterburner =
+						memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
+					yield return bot.EnsureIsActive(subsetModuleAfterburner);
 					yield break;
+				}
 
 				var celestialOrbitIncludes = "broken|pirate gate|wreck";
 				var celestialOrbitDistance = "30 km";
@@ -51,10 +56,6 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (celestialOrbitEntry != null || overviewEntryLockTarget != null)
 				{
-					var subsetModuleAfterburner =
-						memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
-					var toggleTask = bot.EnsureIsActive(subsetModuleAfterburner);
-					yield return toggleTask;
 					yield return new MenuPathTask {
 						RootUIElement = celestialOrbitEntry ?? overviewEntryLockTarget,
 						Bot = bot,

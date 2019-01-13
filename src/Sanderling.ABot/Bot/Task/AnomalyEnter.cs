@@ -40,7 +40,12 @@ namespace Sanderling.ABot.Bot.Task
 					};
 
 				if (null != scanResultCombatSite)
-					yield return scanResultCombatSite.ClickMenuEntryByRegexPattern(bot, ParseStatic.MenuEntryWarpToAtLeafRegexPattern);
+					yield return new MenuPathTask
+					{
+						RootUIElement = scanResultCombatSite,
+						Bot = bot,
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { @"within 50 km" } },
+					};
 			}
 		}
 

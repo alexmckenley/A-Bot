@@ -7,12 +7,13 @@ using System;
 using Sanderling.Interface.MemoryStruct;
 using Sanderling.ABot.Parse;
 using Bib3;
+using WindowsInput.Native;
 
 namespace Sanderling.ABot.Bot.Task
 {
 	public class CombatTask : IBotTask
 	{
-		const int TargetCountMax = 4;
+		const int TargetCountMax = 2;
 
 		public Bot bot;
 
@@ -87,7 +88,11 @@ namespace Sanderling.ABot.Bot.Task
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
 
 					if (droneInLocalSpaceIdle)
-						yield return droneGroupInLocalSpace.ClickMenuEntryByRegexPattern(bot, @"engage");
+					{
+						var fKey = VirtualKeyCode.VK_F;
+						yield return new BotTask { Effects = new[] { fKey.KeyboardPress() } };
+					}
+					//	yield return droneGroupInLocalSpace.ClickMenuEntryByRegexPattern(bot, @"engage");
 				}
 
 				var overviewEntryLockTarget =
