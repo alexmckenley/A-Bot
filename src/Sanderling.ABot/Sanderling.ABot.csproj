@@ -78,6 +78,7 @@
     <Compile Include="Bot\Task\EnableInfoPanelCurrentSystem.cs" />
     <Compile Include="Bot\Task\Menu.cs" />
     <Compile Include="Bot\Task\Module.cs" />
+    <Compile Include="Bot\Task\Orbit.cs" />
     <Compile Include="Bot\Task\Retreat.cs" />
     <Compile Include="Bot\Task\SaveShip.cs" />
     <Compile Include="Bot\Task\Undock.cs" />

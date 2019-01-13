@@ -156,6 +156,10 @@ namespace Sanderling.ABot.Bot
 			if (!saveShipTask.AllowRoam)
 				yield break;
 
+			var orbitTask = new OrbitTask { bot = this };
+
+			yield return orbitTask;
+
 			var combatTask = new CombatTask { bot = this };
 
 			yield return combatTask;

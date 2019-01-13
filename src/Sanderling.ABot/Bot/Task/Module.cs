@@ -31,10 +31,26 @@ namespace Sanderling.ABot.Bot.Task
 			return new ModuleToggleTask { bot = bot, module = module };
 		}
 
+		static public IBotTask EnsureIsInactive(
+			this Bot bot,
+			IShipUiModule module)
+		{
+			if (module?.IsActive(bot) ?? false)
+				return new ModuleToggleTask { bot = bot, module = module };
+			return null;
+		}
+
 		static public IBotTask EnsureIsActive(
 			this Bot bot,
+			IEnumerable<IShipUiModule> setModule)
+		{
+			return new BotTask { Component = setModule?.Select(module => bot?.EnsureIsActive(module)) };
+		}
+
+		static public IBotTask EnsureIsInactive(
+			this Bot bot,
 			IEnumerable<IShipUiModule> setModule) =>
-			new BotTask { Component = setModule?.Select(module => bot?.EnsureIsActive(module)) };
+			new BotTask { Component = setModule?.Select(module => bot?.EnsureIsInactive(module)) };
 	}
 
 	public class ModuleToggleTask : IBotTask
