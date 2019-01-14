@@ -89,8 +89,7 @@ namespace Sanderling.ABot.Bot.Task
 
 					if (droneInLocalSpaceIdle)
 					{
-						var fKey = VirtualKeyCode.VK_F;
-						yield return new BotTask { Effects = new[] { fKey.KeyboardPress() } };
+						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 					}
 				}
 
@@ -98,7 +97,14 @@ namespace Sanderling.ABot.Bot.Task
 					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
 
 				if (null != overviewEntryLockTarget && !(TargetCountMax <= memoryMeasurement?.Target?.Length))
-					yield return overviewEntryLockTarget.ClickMenuEntryByRegexPattern(bot, @"^lock\s*target");
+					yield return new BotTask() { Effects = new[] {
+						// EngageDrones
+						VirtualKeyCode.VK_F.KeyboardPress(),
+						// LockNextTarget
+						VirtualKeyCode.CONTROL.KeyDown(),
+						overviewEntryLockTarget.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left),
+						VirtualKeyCode.CONTROL.KeyUp(),
+					} };
 
 				if (!(0 < listOverviewEntryToAttack?.Length))
 					if (0 < droneInLocalSpaceCount)
