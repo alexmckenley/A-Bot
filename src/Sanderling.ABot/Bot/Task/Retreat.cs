@@ -27,6 +27,13 @@ namespace Sanderling.ABot.Bot.Task
 
 				var retreatBookmark = Bot?.ConfigSerialAndStruct.Value?.RetreatBookmark;
 
+				var dockStation =
+					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
+					?.Where(entry => entry?.Type?.RegexMatchSuccessIgnoreCase(@"raitaru") ?? false)
+					?.OrderBy(entry => entry?.DistanceMax ?? int.MaxValue)
+					?.ToArray()
+					?.FirstOrDefault();
+
 				// Disable Afterburner
 				var subsetModuleAfterburner =
 					memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
@@ -46,7 +53,6 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceReturning =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
 
-				var retreatAction = droneInLocalSpaceCount > 0 ? @"align to" : @"^dock";
 				// Recall drones before retreating
 				if (droneInLocalSpaceCount > 0 && !droneInLocalSpaceReturning)
 				{
@@ -57,12 +63,20 @@ namespace Sanderling.ABot.Bot.Task
 				if (droneInLocalSpaceCount > 0 && (memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text == @"Aligning") ?? false))
 					yield break;
 
-				yield return new MenuPathTask
+				if (dockStation != null)
 				{
-					RootUIElement = memoryMeasurement?.InfoPanelCurrentSystem?.ListSurroundingsButton,
-					Bot = Bot,
-					ListMenuListPriorityEntryRegexPattern = new[] { new[] { retreatBookmark }, new[] { retreatAction, ParseStatic.MenuEntryWarpToAtLeafRegexPattern } },
-				};
+					var retreatActionKey = droneInLocalSpaceCount > 0 ? VirtualKeyCode.VK_A : VirtualKeyCode.VK_D;
+					yield return new BotTask() { Effects = new[] { retreatActionKey.KeyDown(), dockStation.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left), retreatActionKey.KeyUp() } };
+				} else
+				{
+					var retreatAction = droneInLocalSpaceCount > 0 ? @"align to" : @"^dock";
+					yield return new MenuPathTask
+					{
+						RootUIElement = memoryMeasurement?.InfoPanelCurrentSystem?.ListSurroundingsButton,
+						Bot = Bot,
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { retreatBookmark }, new[] { retreatAction, ParseStatic.MenuEntryWarpToAtLeafRegexPattern } },
+					};
+				}
 			}
 		}
 

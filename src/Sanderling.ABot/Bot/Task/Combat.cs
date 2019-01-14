@@ -96,7 +96,9 @@ namespace Sanderling.ABot.Bot.Task
 				var overviewEntryLockTarget =
 					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
 
-				if (null != overviewEntryLockTarget && !(TargetCountMax <= memoryMeasurement?.Target?.Length))
+				var numCurrentTargets = listOverviewEntryToAttack?.Where(entry => ((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false))).Count();
+
+				if (null != overviewEntryLockTarget && !(TargetCountMax <= numCurrentTargets))
 					yield return new BotTask() { Effects = new[] {
 						// EngageDrones
 						VirtualKeyCode.VK_F.KeyboardPress(),
