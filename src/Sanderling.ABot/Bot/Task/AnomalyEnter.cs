@@ -59,7 +59,7 @@ namespace Sanderling.ABot.Bot.Task
 					{
 						RootUIElement = scanResultCombatSite,
 						Bot = bot,
-						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { @"within 50 km" } },
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { @"within 30 km" } },
 					};
 				}
 

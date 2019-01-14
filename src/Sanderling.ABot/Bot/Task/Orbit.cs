@@ -35,7 +35,7 @@ namespace Sanderling.ABot.Bot.Task
 				}
 
 				var celestialOrbitIncludes = "broken|pirate gate|wreck";
-				var celestialOrbitDistance = "30 km";
+				var celestialOrbitDistance = "20 km";
 
 				var celestialOrbitEntry =
 					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
