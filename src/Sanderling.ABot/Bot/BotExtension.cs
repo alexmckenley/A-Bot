@@ -32,6 +32,19 @@ namespace Sanderling.ABot.Bot
 			Sanderling.Parse.IOverviewEntry entry) =>
 			AttackPriorityIndexForOverviewEntryEWar(bot?.OverviewMemory?.SetEWarTypeFromOverviewEntry(entry));
 
+		static public Sanderling.Parse.IOverviewEntry[] SortTargets(this Bot bot, IEnumerable<Sanderling.Parse.IOverviewEntry> list) => list
+			?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
+			?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
+			?.OrderBy(entry => bot.AttackPriorityIndex(entry))
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver")) //Frigate
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver")) //Frigate
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior")) //Destroyer
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet")) //Cruiser
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle")) //Battlecruiser
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s")) //Battleship
+			?.ThenBy(entry => entry?.DistanceMax ?? int.MaxValue)
+			?.ToArray();
+
 		static public bool ShouldBeIncludedInStepOutput(this IBotTask task) =>
 			(task?.ContainsEffect() ?? false) || task is DiagnosticTask;
 

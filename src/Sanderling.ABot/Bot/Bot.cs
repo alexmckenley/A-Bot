@@ -160,6 +160,10 @@ namespace Sanderling.ABot.Bot
 
 			yield return orbitTask;
 
+			var closeTelecomTask = new CloseTelecomTask { bot = this };
+
+			yield return closeTelecomTask;
+
 			var combatTask = new CombatTask { bot = this };
 
 			yield return combatTask;

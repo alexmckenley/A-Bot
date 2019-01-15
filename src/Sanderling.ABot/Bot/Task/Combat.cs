@@ -32,17 +32,7 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 
 				var listOverviewEntryToAttack =
-					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
-					?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
-					?.OrderBy(entry => bot.AttackPriorityIndex(entry))
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver")) //Frigate
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver")) //Frigate
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior")) //Destroyer
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet")) //Cruiser
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle")) //Battlecruiser
-					?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s")) //Battleship
-					?.ThenBy(entry => entry?.DistanceMax ?? int.MaxValue)
-					?.ToArray();
+					bot.SortTargets(memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry);
 
 				var targetSelected =
 					memoryMeasurement?.Target?.FirstOrDefault(target => target?.IsSelected ?? false);
@@ -82,12 +72,12 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceIdle =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("idle")) ?? false;
 
-				if (shouldAttackTarget)
+				if (listOverviewEntryToAttack.Length > 1)
 				{
 					if (0 < droneInBayCount && droneInLocalSpaceCount < 5)
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
 
-					if (droneInLocalSpaceIdle)
+					if (droneInLocalSpaceIdle && shouldAttackTarget)
 					{
 						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 					}

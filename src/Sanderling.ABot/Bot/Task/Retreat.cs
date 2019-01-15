@@ -34,11 +34,6 @@ namespace Sanderling.ABot.Bot.Task
 					?.ToArray()
 					?.FirstOrDefault();
 
-				// Disable Afterburner
-				var subsetModuleAfterburner =
-					memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
-				yield return Bot.EnsureIsInactive(subsetModuleAfterburner);
-
 				var droneListView = memoryMeasurement?.WindowDroneView?.FirstOrDefault()?.ListView;
 				var droneGroupWithNameMatchingPattern = new Func<string, DroneViewEntryGroup>(namePattern =>
 						droneListView?.Entry?.OfType<DroneViewEntryGroup>()?.FirstOrDefault(group => group?.LabelTextLargest()?.Text?.RegexMatchSuccessIgnoreCase(namePattern) ?? false));
@@ -59,6 +54,11 @@ namespace Sanderling.ABot.Bot.Task
 					var returnDrones = new[] { VirtualKeyCode.SHIFT, VirtualKeyCode.VK_R };
 					yield return new BotTask() { Effects = new[] { returnDrones.KeyboardPressCombined() } };
 				}
+
+				// Disable Afterburner
+				var subsetModuleAfterburner =
+					memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
+				yield return Bot.EnsureIsInactive(subsetModuleAfterburner);
 
 				if (droneInLocalSpaceCount > 0 && (memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text == @"Aligning") ?? false))
 					yield break;

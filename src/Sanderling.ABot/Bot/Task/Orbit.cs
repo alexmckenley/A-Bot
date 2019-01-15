@@ -18,6 +18,9 @@ namespace Sanderling.ABot.Bot.Task
 		{
 			get
 			{
+				var celestialOrbitIncludes = "wreck";
+				var celestialOrbitDistance = "25 km";
+
 				var memoryMeasurementAtTime = bot?.MemoryMeasurementAtTime;
 				var memoryMeasurementAccu = bot?.MemoryMeasurementAccu;
 
@@ -34,30 +37,26 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 				}
 
-				var celestialOrbitIncludes = "broken|pirate gate|wreck";
-				var celestialOrbitDistance = "25 km";
-
-				var celestialOrbitEntry =
+				var celestialOrbitEntries =
 					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
 					?.Where(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(celestialOrbitIncludes) ?? false)
-					?.OrderBy(entry => bot.AttackPriorityIndex(entry))
-					?.ThenBy(entry => entry?.DistanceMax ?? int.MaxValue)
-					?.ToArray()
-					?.FirstOrDefault();
-
-				var listOverviewEntryToAttack =
-					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
-					?.OrderBy(entry => bot.AttackPriorityIndex(entry))
-					?.ThenBy(entry => entry?.DistanceMax ?? int.MaxValue)
+					?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
+					?.OrderBy(entry => entry?.DistanceMax ?? int.MaxValue)
 					?.ToArray();
 
-				var overviewEntryLockTarget =
-					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
+				// Only orbit if exactly one wreck
+				var celestialOrbitEntry = ((celestialOrbitEntries?.Length ?? 0) == 1) ? celestialOrbitEntries?.FirstOrDefault() : null;
 
-				if (celestialOrbitEntry != null || overviewEntryLockTarget != null)
+				var listOverviewEntriesToAttack =
+					bot.SortTargets(memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry);
+
+				var overviewEntryTarget =
+					listOverviewEntriesToAttack?.FirstOrDefault();
+
+				if (celestialOrbitEntry != null || overviewEntryTarget != null)
 				{
 					yield return new MenuPathTask {
-						RootUIElement = celestialOrbitEntry ?? overviewEntryLockTarget,
+						RootUIElement = celestialOrbitEntry ?? overviewEntryTarget,
 						Bot = bot,
 						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"orbit" }, new[] { celestialOrbitDistance } },
 					};
