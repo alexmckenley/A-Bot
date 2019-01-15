@@ -43,15 +43,6 @@ namespace Sanderling.ABot.Bot.Task
 				var setModuleWeapon =
 					memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsWeapon ?? false);
 
-				if (null != targetSelected)
-					if (shouldAttackTarget)
-					{
-						if (targetSelected.Assigned == null)
-							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
-						yield return bot.EnsureIsActive(setModuleWeapon);
-					}
-					else
-						yield return targetSelected.ClickMenuEntryByRegexPattern(bot, "unlock");
 
 				var droneListView = memoryMeasurement?.WindowDroneView?.FirstOrDefault()?.ListView;
 
@@ -76,7 +67,17 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceIdle =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("idle")) ?? false;
 
-				if (listOverviewEntryToAttack.Length > 1)
+				if (null != targetSelected)
+					if (shouldAttackTarget)
+					{
+						if (targetSelected.Assigned == null && droneInLocalSpaceCount == 5)
+							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
+						yield return bot.EnsureIsActive(setModuleWeapon);
+					}
+					else
+						yield return targetSelected.ClickMenuEntryByRegexPattern(bot, "unlock");
+
+				if (listOverviewEntryToAttack.Length > 0)
 				{
 					if (0 < droneInBayCount && droneInLocalSpaceCount < 5)
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
