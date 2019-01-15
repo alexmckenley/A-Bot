@@ -46,7 +46,7 @@ namespace Sanderling.ABot.Bot.Task
 				if (null != targetSelected)
 					if (shouldAttackTarget)
 					{
-						if (targetSelected.Assigned?.Length == 0)
+						if (targetSelected.Assigned == null)
 							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 						yield return bot.EnsureIsActive(setModuleWeapon);
 					}
