@@ -45,7 +45,11 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (null != targetSelected)
 					if (shouldAttackTarget)
+					{
+						if (targetSelected.Assigned?.Length == 0)
+							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 						yield return bot.EnsureIsActive(setModuleWeapon);
+					}
 					else
 						yield return targetSelected.ClickMenuEntryByRegexPattern(bot, "unlock");
 
@@ -90,9 +94,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (null != overviewEntryLockTarget && !(TargetCountMax <= numCurrentTargets))
 					yield return new BotTask() { Effects = new[] {
-						// EngageDrones
-						VirtualKeyCode.VK_F.KeyboardPress(),
-						// LockNextTarget
+						// Lock Target
 						VirtualKeyCode.CONTROL.KeyDown(),
 						overviewEntryLockTarget.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left),
 						VirtualKeyCode.CONTROL.KeyUp(),
