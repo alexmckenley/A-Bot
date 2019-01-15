@@ -36,7 +36,7 @@ namespace Sanderling.ABot.Bot
 			?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
 			?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
 			?.OrderBy(entry => bot.AttackPriorityIndex(entry))
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver")) //Frigate
+			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver|mortifier")) //Frigate
 			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver")) //Frigate
 			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior")) //Destroyer
 			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet")) //Cruiser
