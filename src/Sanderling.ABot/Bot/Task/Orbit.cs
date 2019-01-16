@@ -18,7 +18,6 @@ namespace Sanderling.ABot.Bot.Task
 		{
 			get
 			{
-				var celestialOrbitIncludes = "wreck";
 				var orbitKM = bot?.ConfigSerialAndStruct.Value?.OrbitKM ?? @"25";
 
 				var memoryMeasurementAtTime = bot?.MemoryMeasurementAtTime;
@@ -45,26 +44,16 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 				}
 
-				var celestialOrbitEntries =
-					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
-					?.Where(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(celestialOrbitIncludes) ?? false)
-					?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
-					?.OrderBy(entry => entry?.DistanceMax ?? int.MaxValue)
-					?.ToArray();
-
-				// Only orbit if exactly one wreck
-				var celestialOrbitEntry = ((celestialOrbitEntries?.Length ?? 0) == 1) ? celestialOrbitEntries?.FirstOrDefault() : null;
-
 				var listOverviewEntriesToAttack =
 					bot.SortTargets(memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry);
 
 				var overviewEntryTarget =
 					listOverviewEntriesToAttack?.FirstOrDefault();
 
-				if (celestialOrbitEntry != null || overviewEntryTarget != null)
+				if (overviewEntryTarget != null)
 				{
 					yield return new MenuPathTask {
-						RootUIElement = celestialOrbitEntry ?? overviewEntryTarget,
+						RootUIElement = overviewEntryTarget,
 						Bot = bot,
 						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"orbit" }, new[] { $"{orbitKM} [m|km]" } },
 					};
