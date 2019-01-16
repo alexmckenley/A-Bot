@@ -5,5 +5,7 @@
 		public string RetreatBookmark;
 
 		public string[] ModuleActivePermanentSetTitlePattern;
+
+		public string[] CloakyCampers;
 	}
 }

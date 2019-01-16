@@ -19,6 +19,7 @@ namespace Sanderling.ABot.Bot.Task
 
 		public bool Completed { private set; get; }
 
+
 		public IEnumerable<IBotTask> Component
 		{
 			get
@@ -43,7 +44,6 @@ namespace Sanderling.ABot.Bot.Task
 				var setModuleWeapon =
 					memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsWeapon ?? false);
 
-
 				var droneListView = memoryMeasurement?.WindowDroneView?.FirstOrDefault()?.ListView;
 
 				var droneGroupWithNameMatchingPattern = new Func<string, DroneViewEntryGroup>(namePattern =>
@@ -67,6 +67,24 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceIdle =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("idle")) ?? false;
 
+				var overviewEntryLockTarget =
+					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
+
+				var numCurrentTargets = listOverviewEntryToAttack?.Where(entry => ((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false))).Count();
+
+				var listOverviewEntryFriends =
+					memoryMeasurement?.WindowOverview?.FirstOrDefault().ListView?.Entry
+					?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 150000)
+					?.Where(entry => entry?.ListBackgroundColor?.Any(bot.IsFriendBackgroundColor) ?? false)
+					?.ToArray();
+
+				// Avoid anom if friend is there
+				if (droneInLocalSpaceCount == 0 && (listOverviewEntryFriends?.Length ?? 0) > 0)
+				{
+					Completed = true;
+					yield break;
+				}
+
 				if (null != targetSelected)
 					if (shouldAttackTarget)
 					{
@@ -87,11 +105,6 @@ namespace Sanderling.ABot.Bot.Task
 						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 					}
 				}
-
-				var overviewEntryLockTarget =
-					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
-
-				var numCurrentTargets = listOverviewEntryToAttack?.Where(entry => ((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false))).Count();
 
 				if (null != overviewEntryLockTarget && !(TargetCountMax <= numCurrentTargets))
 					yield return new BotTask() { Effects = new[] {

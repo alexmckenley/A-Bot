@@ -22,7 +22,7 @@ namespace Sanderling.ABot.Bot.Task
 
 		const int AllowAnomalyEnterSessionDurationMin = AllowRoamSessionDurationMin + 60 * 7;
 
-		static public bool ChatIsClean(WindowChatChannel chatWindow)
+		static public bool ChatIsClean(Bot bot, WindowChatChannel chatWindow)
 		{
 			if (null == chatWindow)
 				return false;
@@ -31,7 +31,10 @@ namespace Sanderling.ABot.Bot.Task
 				return false;
 
 			var listParticipantNeutralOrEnemy =
-				chatWindow?.ParticipantView?.Entry?.Where(participant => participant.IsNeutralOrEnemy())?.ToArray();
+				chatWindow?.ParticipantView?.Entry
+				?.Where(participant => !(bot.ConfigSerialAndStruct.Value?.CloakyCampers?.Contains(participant?.NameLabel?.Text) ?? false))
+				?.Where(participant => participant.IsNeutralOrEnemy())
+				?.ToArray();
 
 			//	we expect own char to show up there as well so there has to be one participant with neutral or enemy flag.
 			return 1 == listParticipantNeutralOrEnemy?.Length;
@@ -70,7 +73,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				var safeShieldHitpoints = shieldHitpointPercent > 20; // Warpoff shield ercent
 
-				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || safeShieldHitpoints) && (charIsLocatedInHighsec || ChatIsClean(localChatWindow)))
+				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || safeShieldHitpoints) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
