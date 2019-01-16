@@ -78,6 +78,8 @@ namespace Sanderling.ABot.Bot.Task
 					?.Where(entry => entry?.ListBackgroundColor?.Any(bot.IsFriendBackgroundColor) ?? false)
 					?.ToArray();
 
+				var beingAttacked = listOverviewEntryToAttack.Any(entry => entry?.IsAttackingMe ?? false);
+
 				// Avoid anom if friend is there
 				if (droneInLocalSpaceCount == 0 && (listOverviewEntryFriends?.Length ?? 0) > 0)
 				{
@@ -97,7 +99,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (listOverviewEntryToAttack.Length > 0)
 				{
-					if (0 < droneInBayCount && droneInLocalSpaceCount < 5)
+					if (0 < droneInBayCount && droneInLocalSpaceCount < 5 && beingAttacked)
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
 
 					if (droneInLocalSpaceIdle && shouldAttackTarget)

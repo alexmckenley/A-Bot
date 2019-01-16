@@ -26,10 +26,18 @@ namespace Sanderling.ABot.Bot.Task
 
 				var memoryMeasurement = memoryMeasurementAtTime?.Value;
 
+				if (memoryMeasurement?.ShipUi?.Indication?.ManeuverType == ShipManeuverTypeEnum.Warp)
+				{
+					var subsetModuleAfterburner =
+						memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
+					yield return bot.EnsureIsInactive(subsetModuleAfterburner);
+					yield break;
+				}
+
 				if (!memoryMeasurement.ManeuverStartPossible())
 					yield break;
 
-				if (memoryMeasurement.ShipUi.Indication.ManeuverType == ShipManeuverTypeEnum.Orbit)
+				if (memoryMeasurement?.ShipUi?.Indication?.ManeuverType == ShipManeuverTypeEnum.Orbit)
 				{
 					var subsetModuleAfterburner =
 						memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
