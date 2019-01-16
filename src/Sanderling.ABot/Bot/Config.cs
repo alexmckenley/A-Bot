@@ -7,5 +7,7 @@
 		public string[] ModuleActivePermanentSetTitlePattern;
 
 		public string[] CloakyCampers;
+
+		public string Anoms;
 	}
 }

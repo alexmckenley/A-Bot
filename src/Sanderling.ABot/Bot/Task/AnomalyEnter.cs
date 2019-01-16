@@ -14,9 +14,6 @@ namespace Sanderling.ABot.Bot.Task
 
 		public Bot bot;
 
-		static public bool AnomalySuitableGeneral(Interface.MemoryStruct.IListEntry scanResult) =>
-			scanResult?.CellValueFromColumnHeader("Name")?.RegexMatchSuccessIgnoreCase("forsaken rally") ?? false;
-
 		public IEnumerable<IBotTask> Component
 		{
 			get
@@ -34,10 +31,14 @@ namespace Sanderling.ABot.Bot.Task
 				var seed = Int32.Parse(DateTime.Now.ToString("mm"));
 				var r = new Random(seed);
 
+				var anoms = bot?.ConfigSerialAndStruct.Value?.Anoms ?? @"forsaken rally";
+				yield return new DiagnosticTask { MessageText = anoms };
+
+
 				// Randomize which anom will be chosen to confuse bad guys
 				var scanResultCombatSite =
 					probeScannerWindow?.ScanResultView?.Entry
-					?.Where(AnomalySuitableGeneral)
+					?.Where(scanResult => scanResult?.CellValueFromColumnHeader("Name")?.RegexMatchSuccessIgnoreCase(anoms) ?? false)
 					?.Select(x => new { Number = r.Next(), Item = x })
 					?.OrderBy(x => x.Number)
 					?.Select(x => x.Item)
