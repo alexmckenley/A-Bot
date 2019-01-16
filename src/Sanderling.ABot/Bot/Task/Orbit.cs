@@ -19,7 +19,7 @@ namespace Sanderling.ABot.Bot.Task
 			get
 			{
 				var celestialOrbitIncludes = "wreck";
-				var celestialOrbitDistance = "25 km";
+				var orbitKM = bot?.ConfigSerialAndStruct.Value?.OrbitKM ?? @"25";
 
 				var memoryMeasurementAtTime = bot?.MemoryMeasurementAtTime;
 				var memoryMeasurementAccu = bot?.MemoryMeasurementAccu;
@@ -66,7 +66,7 @@ namespace Sanderling.ABot.Bot.Task
 					yield return new MenuPathTask {
 						RootUIElement = celestialOrbitEntry ?? overviewEntryTarget,
 						Bot = bot,
-						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"orbit" }, new[] { celestialOrbitDistance } },
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"orbit" }, new[] { $"{orbitKM} [m|km]" } },
 					};
 				}
 			}

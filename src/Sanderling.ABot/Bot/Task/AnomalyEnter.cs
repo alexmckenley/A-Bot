@@ -32,8 +32,7 @@ namespace Sanderling.ABot.Bot.Task
 				var r = new Random(seed);
 
 				var anoms = bot?.ConfigSerialAndStruct.Value?.Anoms ?? @"forsaken rally";
-				yield return new DiagnosticTask { MessageText = anoms };
-
+				var warpToWithinKM = bot?.ConfigSerialAndStruct.Value?.WarpToWithinKM ?? @"30";
 
 				// Randomize which anom will be chosen to confuse bad guys
 				var scanResultCombatSite =
@@ -60,7 +59,7 @@ namespace Sanderling.ABot.Bot.Task
 					{
 						RootUIElement = scanResultCombatSite,
 						Bot = bot,
-						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { @"within 30 km" } },
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { $"within {warpToWithinKM} [m|km]" } },
 					};
 				}
 
