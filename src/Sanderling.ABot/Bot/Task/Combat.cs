@@ -67,6 +67,9 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceIdle =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("idle")) ?? false;
 
+				var droneInLocalSpaceReturning =
+					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
+
 				var overviewEntryLockTarget =
 					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
 
@@ -117,10 +120,13 @@ namespace Sanderling.ABot.Bot.Task
 					} };
 
 				if (!(0 < listOverviewEntryToAttack?.Length))
-					if (0 < droneInLocalSpaceCount)
+					if (droneInLocalSpaceCount > 0)
 					{
-						var returnDrones = new[] { VirtualKeyCode.SHIFT, VirtualKeyCode.VK_R };
-						yield return new BotTask() { Effects = new[] { returnDrones.KeyboardPressCombined() } };
+						if (!droneInLocalSpaceReturning)
+						{
+							var returnDrones = new[] { VirtualKeyCode.SHIFT, VirtualKeyCode.VK_R };
+							yield return new BotTask() { Effects = new[] { returnDrones.KeyboardPressCombined() } };
+						}
 					}
 					else
 						Completed = true;
