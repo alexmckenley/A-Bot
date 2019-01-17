@@ -48,6 +48,21 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceReturning =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
 
+				var listOverviewEntryEnemies =
+					memoryMeasurement?.WindowOverview?.FirstOrDefault().ListView?.Entry
+					?.Where(entry => entry?.ListBackgroundColor?.Any(Bot.IsEnemyBackgroundColor) ?? false)
+					?.ToArray();
+
+				var alignActionKey = VirtualKeyCode.VK_A;
+				var dockActionKey = VirtualKeyCode.VK_D;
+
+				// EMERGENCY RETREAT
+				if (dockStation != null && (listOverviewEntryEnemies?.Length ?? 0) > 0)
+				{
+					yield return new BotTask() { Effects = new[] { dockActionKey.KeyDown(), dockStation.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left), dockActionKey.KeyUp() } };
+					yield break;
+				}
+
 				// Recall drones before retreating
 				if (droneInLocalSpaceCount > 0 && !droneInLocalSpaceReturning)
 				{
@@ -65,7 +80,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (dockStation != null)
 				{
-					var retreatActionKey = droneInLocalSpaceCount > 0 ? VirtualKeyCode.VK_A : VirtualKeyCode.VK_D;
+					var retreatActionKey = (droneInLocalSpaceCount > 0) ? alignActionKey : dockActionKey;
 					yield return new BotTask() { Effects = new[] { retreatActionKey.KeyDown(), dockStation.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left), retreatActionKey.KeyUp() } };
 				} else
 				{

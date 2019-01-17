@@ -49,6 +49,9 @@ namespace Sanderling.ABot.Bot
 		static public bool IsFriendBackgroundColor(this Bot bot, ColorORGB color) =>
 			(color.OMilli == 500 && color.RMilli == 0 && color.GMilli == 150 && color.BMilli == 600) || (color.OMilli == 500 && color.RMilli == 100 && color.GMilli == 600 && color.BMilli == 100);
 
+		static public bool IsEnemyBackgroundColor(this Bot bot, ColorORGB color) =>
+			(color.OMilli == 500 && color.RMilli == 750 && color.GMilli == 0 && color.BMilli == 600);
+
 		static public bool ShouldBeIncludedInStepOutput(this IBotTask task) =>
 			(task?.ContainsEffect() ?? false) || task is DiagnosticTask;
 
