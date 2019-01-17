@@ -13,5 +13,7 @@
 		public string OrbitKM;
 
 		public string WarpToWithinKM;
+
+		public int TargetingRangeKM;
 	}
 }

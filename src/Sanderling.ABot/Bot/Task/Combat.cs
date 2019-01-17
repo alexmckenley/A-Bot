@@ -32,6 +32,8 @@ namespace Sanderling.ABot.Bot.Task
 				if (!memoryMeasurement.ManeuverStartPossible())
 					yield break;
 
+				var targetingRangeDistance = (bot?.ConfigSerialAndStruct.Value?.TargetingRangeKM ?? 30) * 1000;
+
 				var listOverviewEntryToAttack =
 					bot.SortTargets(memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry);
 
@@ -111,7 +113,7 @@ namespace Sanderling.ABot.Bot.Task
 					}
 				}
 
-				if (null != overviewEntryLockTarget && !(TargetCountMax <= numCurrentTargets))
+				if (null != overviewEntryLockTarget && TargetCountMax > numCurrentTargets && (overviewEntryLockTarget?.DistanceMax ?? 30000) <= targetingRangeDistance)
 					yield return new BotTask() { Effects = new[] {
 						// Lock Target
 						VirtualKeyCode.CONTROL.KeyDown(),
