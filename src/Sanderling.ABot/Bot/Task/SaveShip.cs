@@ -46,6 +46,10 @@ namespace Sanderling.ABot.Bot.Task
 			{
 				var memoryMeasurement = Bot?.MemoryMeasurementAtTime?.Value;
 
+				var shieldRetreatPercent = Bot?.ConfigSerialAndStruct.Value?.ShieldRetreatPercent;
+				var armorRetreatPercent = Bot?.ConfigSerialAndStruct.Value?.ArmorRetreatPercent;
+				var hullRetreatPercent = Bot?.ConfigSerialAndStruct.Value?.HullRetreatPercent;
+
 				var charIsLocatedInHighsec = 500 < memoryMeasurement?.InfoPanelCurrentSystem?.SecurityLevelMilli;
 
 				var setLocalChatWindowCandidate =
@@ -69,11 +73,14 @@ namespace Sanderling.ABot.Bot.Task
 
 				var sessionDurationSufficient = AllowRoamSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
 
-				var shieldHitpointPercent = memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Shield / 10;
+				var currentShieldPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Shield ?? 0) / 10;
+				var currentArmorPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Armor ?? 0) / 10;
+				var currentHullPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Struct ?? 0) / 10;
+				var safeShield = currentShieldPercent > (shieldRetreatPercent ?? -1);
+				var safeArmor = currentArmorPercent > (armorRetreatPercent ?? -1);
+				var safeHull = currentHullPercent > (hullRetreatPercent ?? 70);
 
-				var safeShieldHitpoints = shieldHitpointPercent > 20; // Warpoff shield ercent
-
-				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || safeShieldHitpoints) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
+				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;

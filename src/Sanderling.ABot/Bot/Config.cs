@@ -14,6 +14,12 @@
 
 		public string WarpToWithinKM;
 
-		public int TargetingRangeKM;
+		public int? TargetingRangeKM;
+
+		public int? ArmorRetreatPercent;
+
+		public int? ShieldRetreatPercent;
+
+		public int? HullRetreatPercent;
 	}
 }
