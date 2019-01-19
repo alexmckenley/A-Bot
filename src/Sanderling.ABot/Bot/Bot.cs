@@ -153,6 +153,10 @@ namespace Sanderling.ABot.Bot
 
 			yield return new BotTask { Effects = new[] { moduleUnknown?.MouseMove() } };
 
+			var afterburnerTask = new AfterburnerTask { bot = this };
+
+			yield return afterburnerTask;
+
 			if (!saveShipTask.AllowRoam)
 				yield break;
 
