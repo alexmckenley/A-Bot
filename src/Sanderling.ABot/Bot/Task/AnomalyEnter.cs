@@ -28,8 +28,9 @@ namespace Sanderling.ABot.Bot.Task
 
 				var probeScannerWindow = memoryMeasurement?.WindowProbeScanner?.FirstOrDefault();
 
-				var seed = Int32.Parse(DateTime.Now.ToString("mm"));
-				var r = new Random(seed);
+				var configSeed = bot?.ConfigSerialAndStruct.Value?.RandomSeed ?? 0;
+				var minuteSeed = Int32.Parse(DateTime.Now.ToString("mm")) + configSeed;
+				var r = new Random(minuteSeed + configSeed);
 
 				var anoms = bot?.ConfigSerialAndStruct.Value?.Anoms ?? @"forsaken rally";
 				var warpToWithinKM = bot?.ConfigSerialAndStruct.Value?.WarpToWithinKM ?? @"30";

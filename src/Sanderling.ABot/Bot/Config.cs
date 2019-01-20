@@ -19,5 +19,7 @@
 		public int? ShieldRetreatPercent;
 
 		public int? HullRetreatPercent;
+
+		public int? RandomSeed;
 	}
 }
