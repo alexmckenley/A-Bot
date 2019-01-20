@@ -4,6 +4,7 @@ using Sanderling.Motor;
 using BotEngine.Common;
 using Sanderling.ABot.Parse;
 using Sanderling.Interface.MemoryStruct;
+using System;
 
 namespace Sanderling.ABot.Bot.Task
 {
@@ -71,6 +72,17 @@ namespace Sanderling.ABot.Bot.Task
 						MessageText = LocalChatWindowNotFoundDiagnosticText,
 					};
 
+				var now = DateTime.UtcNow;
+				var startWindow = new DateTime(now.Year, now.Month, now.Day, 10, 45, 0, DateTimeKind.Utc);
+				var endWindow = new DateTime(now.Year, now.Month, now.Day, 11, 15, 0, DateTimeKind.Utc);
+				var impendingDowntime = now >= startWindow && now < endWindow;
+
+				if (impendingDowntime)
+					yield return new DiagnosticTask
+					{
+						MessageText = "Impending Downtime!", 
+					};
+
 				var sessionDurationSufficient = AllowRoamSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
 
 				var currentShieldPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Shield ?? 0) / 10;
@@ -80,7 +92,7 @@ namespace Sanderling.ABot.Bot.Task
 				var safeArmor = currentArmorPercent > (armorRetreatPercent ?? -1);
 				var safeHull = currentHullPercent > (hullRetreatPercent ?? 70);
 
-				if (sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
+				if (!impendingDowntime && sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;

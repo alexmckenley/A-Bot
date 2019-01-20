@@ -80,7 +80,6 @@
     <Compile Include="Bot\Task\Module.cs" />
     <Compile Include="Bot\Task\CloseTelecom.cs" />
     <Compile Include="Bot\Task\Afterburner.cs" />
-    <Compile Include="Bot\Task\Orbit.cs" />
     <Compile Include="Bot\Task\Retreat.cs" />
     <Compile Include="Bot\Task\SaveShip.cs" />
     <Compile Include="Bot\Task\Undock.cs" />

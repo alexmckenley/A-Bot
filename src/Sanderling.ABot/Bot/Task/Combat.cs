@@ -72,6 +72,9 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceReturning =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
 
+				var overviewEntryTarget =
+					listOverviewEntryToAttack?.FirstOrDefault();
+
 				var overviewEntryLockTarget =
 					listOverviewEntryToAttack?.FirstOrDefault(entry => !((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false)));
 
@@ -95,22 +98,28 @@ namespace Sanderling.ABot.Bot.Task
 				if (null != targetSelected)
 					if (shouldAttackTarget)
 					{
-						if (targetSelected.Assigned == null && droneInLocalSpaceCount == 5)
+						if (targetSelected.Assigned == null && droneInLocalSpaceCount == 5 && (targetSelected?.TextRow?.Any(text => text?.RegexMatchSuccessIgnoreCase(@"pithi|mortifier") ?? false) ?? false))
 							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 						yield return bot.EnsureIsActive(setModuleWeapon);
 					}
 					else
 						yield return targetSelected.ClickMenuEntryByRegexPattern(bot, "unlock");
 
-				if (listOverviewEntryToAttack.Length > 0)
+				if (listOverviewEntryToAttack?.Length > 0)
 				{
 					if (0 < droneInBayCount && droneInLocalSpaceCount < 5 && beingAttacked)
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
 
 					if (droneInLocalSpaceIdle && shouldAttackTarget)
-					{
 						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
-					}
+
+					if (memoryMeasurement?.ShipUi?.Indication?.ManeuverType != ShipManeuverTypeEnum.Orbit)
+						yield return new BotTask() { Effects = new[] {
+							// Orbit target
+							VirtualKeyCode.VK_W.KeyDown(),
+							overviewEntryTarget.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left),
+							VirtualKeyCode.VK_W.KeyUp(),
+						} };
 				}
 
 				if (null != overviewEntryLockTarget && TargetCountMax > numCurrentTargets && (overviewEntryLockTarget?.DistanceMax ?? 30000) <= targetingRangeDistance)
@@ -121,7 +130,7 @@ namespace Sanderling.ABot.Bot.Task
 						VirtualKeyCode.CONTROL.KeyUp(),
 					} };
 
-				if (!(0 < listOverviewEntryToAttack?.Length))
+				if (listOverviewEntryToAttack?.Length == 0)
 					if (droneInLocalSpaceCount > 0)
 					{
 						if (!droneInLocalSpaceReturning)

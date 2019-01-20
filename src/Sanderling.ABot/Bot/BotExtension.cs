@@ -36,13 +36,23 @@ namespace Sanderling.ABot.Bot
 		static public Sanderling.Parse.IOverviewEntry[] SortTargets(this Bot bot, IEnumerable<Sanderling.Parse.IOverviewEntry> list) => list
 			?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
 			?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
-			?.OrderBy(entry => bot.AttackPriorityIndex(entry))
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver|mortifier")) //Frigate
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver")) //Frigate
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior")) //Destroyer
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet")) //Cruiser
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle")) //Battlecruiser
-			?.OrderBy(entry => entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s")) //Battleship
+			?.OrderBy(entry => {
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"pithi|mortifier") ?? false) // Special cases 
+					return 1;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver") ?? false) // Frigate
+					return 2;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver") ?? false) // Frigate
+					return 3;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior") ?? false) // 
+					return 4;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet") ?? false)
+					return 5;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle") ?? false)
+					return 6;
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s") ?? false)
+					return 7;
+				return -1;
+			})
 			?.ThenBy(entry => entry?.DistanceMax ?? int.MaxValue)
 			?.ToArray();
 

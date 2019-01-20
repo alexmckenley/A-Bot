@@ -160,10 +160,6 @@ namespace Sanderling.ABot.Bot
 			if (!saveShipTask.AllowRoam)
 				yield break;
 
-			var orbitTask = new OrbitTask { bot = this };
-
-			yield return orbitTask;
-
 			var closeTelecomTask = new CloseTelecomTask { bot = this };
 
 			yield return closeTelecomTask;
