@@ -113,7 +113,7 @@ namespace Sanderling.ABot.Bot.Task
 					if (droneInLocalSpaceIdle && shouldAttackTarget)
 						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 
-					if (memoryMeasurement?.ShipUi?.Indication?.ManeuverType != ShipManeuverTypeEnum.Orbit)
+					if ((memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text?.RegexMatchSuccessIgnoreCase(@"wreck") ?? false) ?? false) || memoryMeasurement?.ShipUi?.Indication?.ManeuverType != ShipManeuverTypeEnum.Orbit)
 						yield return new BotTask() { Effects = new[] {
 							// Orbit target
 							VirtualKeyCode.VK_W.KeyDown(),
