@@ -43,13 +43,13 @@ namespace Sanderling.ABot.Bot
 					return 2;
 				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"coreli|centi|alvi|pithi|corpii|gistii|cleric|engraver") ?? false) // Frigate
 					return 3;
-				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior") ?? false) // 
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelior|centior|alvior|pithior|corpior|gistior") ?? false) // Destroyer
 					return 4;
-				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet") ?? false)
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelum|centum|alvum|pithum|corpum|gistum|prophet") ?? false) // Cruiser
 					return 5;
-				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle") ?? false)
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"corelatis|centatis|alvatis|pithatis|copatis|gistatis|apostle") ?? false) // Battlecruiser
 					return 6;
-				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s") ?? false)
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"core\s|centus|alvus|pith\s|corpus|gist\s") ?? false) // Battleship
 					return 7;
 				return -1;
 			})
