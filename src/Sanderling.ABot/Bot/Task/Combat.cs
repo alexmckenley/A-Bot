@@ -13,7 +13,7 @@ namespace Sanderling.ABot.Bot.Task
 {
 	public class CombatTask : IBotTask
 	{
-		const int TargetCountMax = 2;
+		const int TargetCountMax = 3;
 
 		public Bot bot;
 
@@ -86,7 +86,7 @@ namespace Sanderling.ABot.Bot.Task
 					?.Where(entry => entry?.ListBackgroundColor?.Any(bot.IsFriendBackgroundColor) ?? false)
 					?.ToArray();
 
-				var beingAttacked = listOverviewEntryToAttack.Any(entry => entry?.IsAttackingMe ?? false);
+				var beingAttacked = listOverviewEntryToAttack?.Any(entry => entry?.IsAttackingMe ?? false) ?? false;
 
 				// Avoid anom if friend is there
 				if (droneInLocalSpaceCount == 0 && (listOverviewEntryFriends?.Length ?? 0) > 0)
@@ -113,7 +113,7 @@ namespace Sanderling.ABot.Bot.Task
 					if (droneInLocalSpaceIdle && shouldAttackTarget)
 						yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 
-					if ((memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text?.RegexMatchSuccessIgnoreCase(@"wreck") ?? false) ?? false) || memoryMeasurement?.ShipUi?.Indication?.ManeuverType != ShipManeuverTypeEnum.Orbit)
+					if ((memoryMeasurement?.ShipUi?.Indication?.LabelText?.Any(label => label?.Text?.RegexMatchSuccessIgnoreCase(@"wreck\s") ?? false) ?? false) || memoryMeasurement?.ShipUi?.Indication?.ManeuverType != ShipManeuverTypeEnum.Orbit)
 						yield return new BotTask() { Effects = new[] {
 							// Orbit target
 							VirtualKeyCode.VK_W.KeyDown(),

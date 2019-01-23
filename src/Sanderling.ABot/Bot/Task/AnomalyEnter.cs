@@ -26,6 +26,14 @@ namespace Sanderling.ABot.Bot.Task
 				if (!memoryMeasurement.ManeuverStartPossible())
 					yield break;
 
+				var tethering = memoryMeasurement?.ShipUi?.EWarElement?.Any(entry => entry?.EWarType?.RegexMatchSuccessIgnoreCase(@"tethering") ?? false) ?? false;
+				var currentShieldPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Shield ?? 0) / 10;
+				var currentArmorPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Armor ?? 0) / 10;
+				var currentHullPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Struct ?? 0) / 10;
+
+				if (tethering && (currentShieldPercent < 100 || currentArmorPercent < 100 || currentHullPercent < 100))
+					yield break;
+
 				var probeScannerWindow = memoryMeasurement?.WindowProbeScanner?.FirstOrDefault();
 
 				var configSeed = bot?.ConfigSerialAndStruct.Value?.RandomSeed ?? 0;
@@ -35,7 +43,7 @@ namespace Sanderling.ABot.Bot.Task
 				var anoms = bot?.ConfigSerialAndStruct.Value?.Anoms ?? @"forsaken rally";
 				var warpToWithinKM = bot?.ConfigSerialAndStruct.Value?.WarpToWithinKM ?? @"30";
 
-				// Randomize which anom will be chosen to confuse bad guys
+				// Randomize which anom will be chosen to confuse enemies 
 				var scanResultCombatSite =
 					probeScannerWindow?.ScanResultView?.Entry
 					?.Where(scanResult => scanResult?.CellValueFromColumnHeader("Name")?.RegexMatchSuccessIgnoreCase(anoms) ?? false)
@@ -52,10 +60,6 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (null != scanResultCombatSite)
 				{
-					// Disable Afterburner
-					//var subsetModuleAfterburner =
-						//memoryMeasurementAccu?.ShipUiModule?.Where(module => module?.TooltipLast?.Value?.IsAfterburner ?? false);
-					//yield return bot.EnsureIsInactive(subsetModuleAfterburner);
 					yield return new MenuPathTask
 					{
 						RootUIElement = scanResultCombatSite,
