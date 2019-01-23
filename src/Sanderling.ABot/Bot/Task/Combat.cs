@@ -98,7 +98,7 @@ namespace Sanderling.ABot.Bot.Task
 				if (null != targetSelected)
 					if (shouldAttackTarget)
 					{
-						if (targetSelected.Assigned == null && droneInLocalSpaceCount == 5 && (targetSelected?.LabelText?.Any(label=> label?.Text?.RegexMatchSuccessIgnoreCase(@"pithi\s|mortifier") ?? false) ?? false))
+						if (targetSelected.Assigned == null && droneInLocalSpaceCount == 5 && (!targetSelected?.LabelText?.Any(label=> label?.Text?.RegexMatchSuccessIgnoreCase(@"pith\s") ?? false) ?? false))
 							yield return new BotTask { Effects = new[] { VirtualKeyCode.VK_F.KeyboardPress() } };
 						yield return bot.EnsureIsActive(setModuleWeapon);
 					}

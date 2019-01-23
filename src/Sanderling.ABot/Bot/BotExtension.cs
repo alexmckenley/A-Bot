@@ -37,7 +37,7 @@ namespace Sanderling.ABot.Bot
 			?.Where(entry => entry?.MainIcon?.Color?.IsRed() ?? false)
 			?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 100000)
 			?.OrderBy(entry => {
-				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"pithi|mortifier") ?? false) // Special cases 
+				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"mortifier") ?? false) // Special cases 
 					return 1;
 				if (entry?.Name?.RegexMatchSuccessIgnoreCase(@"battery|tower|sentry|web|strain|splinter|render|raider|friar|reaver") ?? false) // Frigate
 					return 2;
