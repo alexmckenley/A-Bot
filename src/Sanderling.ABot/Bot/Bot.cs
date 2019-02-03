@@ -23,6 +23,10 @@ namespace Sanderling.ABot.Bot
 
 		int stepIndex;
 
+		public DateTime saveShipCooldown = DateTime.MinValue;
+
+		public string cooldownReason = @"";
+
 		public FromProcessMeasurement<IMemoryMeasurement> MemoryMeasurementAtTime { private set; get; }
 
 		readonly public Accumulator.MemoryMeasurementAccumulator MemoryMeasurementAccu = new Accumulator.MemoryMeasurementAccumulator();
@@ -157,6 +161,10 @@ namespace Sanderling.ABot.Bot
 
 			yield return afterburnerTask;
 
+			var intelTask = new IntelTask { bot = this };
+
+			yield return intelTask;
+
 			if (!saveShipTask.AllowRoam)
 				yield break;
 
@@ -171,7 +179,7 @@ namespace Sanderling.ABot.Bot
 			if (!saveShipTask.AllowAnomalyEnter)
 				yield break;
 
-			yield return new UndockTask { MemoryMeasurement = MemoryMeasurementAtTime?.Value };
+			yield return new UndockTask { bot = this };
 
 			if (combatTask.Completed)
 				yield return new AnomalyEnter { bot = this };

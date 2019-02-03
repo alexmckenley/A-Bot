@@ -8,6 +8,8 @@
 
 		public string AvoidShipType;
 
+		public string IntelChannel; 
+
 		public string[] ModuleActivePermanentSetTitlePattern;
 
 		public string[] CloakyCampers;
@@ -25,5 +27,7 @@
 		public int? HullRetreatPercent;
 
 		public int? RandomSeed;
+
+		public int? EnemySightedCooldownMinutes;
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Sanderling.Motor;
 using Sanderling.Parse;
@@ -7,7 +8,7 @@ namespace Sanderling.ABot.Bot.Task
 {
 	public class UndockTask : IBotTask
 	{
-		public IMemoryMeasurement MemoryMeasurement;
+		public Bot bot;
 
 		public IEnumerable<IBotTask> Component => null;
 
@@ -15,13 +16,19 @@ namespace Sanderling.ABot.Bot.Task
 		{
 			get
 			{
-				if (MemoryMeasurement?.IsUnDocking ?? false)
+				var memoryMeasurementAtTime = bot?.MemoryMeasurementAtTime;
+				var memoryMeasurement = memoryMeasurementAtTime?.Value;
+
+				if (memoryMeasurement?.IsUnDocking ?? false)
 					yield break;
 
-				if (!(MemoryMeasurement?.IsDocked ?? false))
+				if (!(memoryMeasurement?.IsDocked ?? false))
 					yield break;
 
-				yield return MemoryMeasurement?.WindowStation?.FirstOrDefault()?.UndockButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
+				if (bot.saveShipCooldown > DateTime.UtcNow)
+					yield break;
+
+				yield return memoryMeasurement?.WindowStation?.FirstOrDefault()?.UndockButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
 			}
 		}
 	}

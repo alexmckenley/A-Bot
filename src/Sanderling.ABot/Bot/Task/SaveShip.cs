@@ -56,7 +56,16 @@ namespace Sanderling.ABot.Bot.Task
 				?.ToArray();
 
 			if ((foundShips?.Length ?? 0) > 0)
+			{
+				var enemySightedCooldownMinutes = bot?.ConfigSerialAndStruct.Value?.EnemySightedCooldownMinutes ?? 20;
+				var cooldownUntil = DateTime.UtcNow.AddMinutes(enemySightedCooldownMinutes);
+				if (cooldownUntil > bot.saveShipCooldown.AddMinutes(1))
+				{
+					bot.saveShipCooldown = cooldownUntil;
+					bot.cooldownReason = $"ENEMY SIGHTED: {foundShips?.FirstOrDefault()?.Name}({foundShips?.FirstOrDefault()?.Type})";
+				}
 				return false;
+			}
 
 			return true;
 		}
@@ -119,7 +128,14 @@ namespace Sanderling.ABot.Bot.Task
 				var overviewIsClean = (memoryMeasurement?.IsDocked ?? false) || OverviewIsClean(Bot, overview);
 				var chatIsClean = charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow);
 
-				if (!impendingDowntime && sessionDurationSufficient && shipHealthOK && chatIsClean && overviewIsClean)
+				var coolingDown = Bot.saveShipCooldown > DateTime.UtcNow;
+				if (coolingDown)
+					yield return new DiagnosticTask
+					{
+						MessageText = $"Cooling down due to: {Bot.cooldownReason}",
+					};
+
+				if (!coolingDown && !impendingDowntime && sessionDurationSufficient && shipHealthOK && chatIsClean && overviewIsClean)
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
