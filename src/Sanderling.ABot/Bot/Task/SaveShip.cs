@@ -115,9 +115,11 @@ namespace Sanderling.ABot.Bot.Task
 				var overview =
 					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry;
 
-				var overviewIsClean = OverviewIsClean(Bot, overview);
+				var shipHealthOK = (memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull);
+				var overviewIsClean = (memoryMeasurement?.IsDocked ?? false) || OverviewIsClean(Bot, overview);
+				var chatIsClean = charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow);
 
-				if (!impendingDowntime && sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)) && overviewIsClean)
+				if (!impendingDowntime && sessionDurationSufficient && shipHealthOK && chatIsClean && overviewIsClean)
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
