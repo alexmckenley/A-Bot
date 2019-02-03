@@ -64,22 +64,16 @@ namespace Sanderling.ABot.Bot.Task
 				if (parsedDate > DateTime.UtcNow && bot.saveShipCooldown < parsedDate)
 				{
 					bot.saveShipCooldown = parsedDate;
-					bot.cooldownReason = @"intel";
+					bot.cooldownReason = @"intel channel";
 				}
 
 				// Report intel if necessary
 				if (bot.saveShipCooldown > parsedDate.AddMinutes(1))
-				{
-					yield return new DiagnosticTask
-					{
-						MessageText = $"reportingINTEL: {bot.saveShipCooldown.ToString("o")}",
-					};
 					yield return new BotTask() { Effects = new[] {
 						intelChatWindow.MessageInput.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left),
 						("--" + bot.saveShipCooldown.ToString("o") + "-- " + bot.cooldownReason).TextEntry(),
 						VirtualKeyCode.RETURN.KeyboardPress(),
 						memoryMeasurement?.InfoPanelRoute?.ExpandToggleButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left) } };
-				}
 			}
 		}
 
