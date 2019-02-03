@@ -15,6 +15,8 @@ namespace Sanderling.ABot.Bot.Task
 	{
 		public Bot Bot;
 
+		public bool EmergencyRetreat;
+
 		public IEnumerable<IBotTask> Component
 		{
 			get
@@ -35,9 +37,11 @@ namespace Sanderling.ABot.Bot.Task
 
 				var retreatBookmark = Bot?.ConfigSerialAndStruct.Value?.RetreatBookmark;
 
+				var retreatType = Bot?.ConfigSerialAndStruct.Value?.RetreatType ?? @"astrahus";
+
 				var dockStation =
 					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry
-					?.Where(entry => entry?.Type?.RegexMatchSuccessIgnoreCase(@"raitaru") ?? false)
+					?.Where(entry => entry?.Type?.RegexMatchSuccessIgnoreCase(retreatType) ?? false)
 					?.OrderBy(entry => entry?.DistanceMax ?? int.MaxValue)
 					?.ToArray()
 					?.FirstOrDefault();
@@ -56,16 +60,11 @@ namespace Sanderling.ABot.Bot.Task
 				var droneInLocalSpaceReturning =
 					droneInLocalSpaceSetStatus?.Any(droneStatus => droneStatus.RegexMatchSuccessIgnoreCase("returning")) ?? false;
 
-				var listOverviewEntryEnemies =
-					memoryMeasurement?.WindowOverview?.FirstOrDefault().ListView?.Entry
-					?.Where(entry => entry?.ListBackgroundColor?.Any(Bot.IsEnemyBackgroundColor) ?? false)
-					?.ToArray();
-
 				var alignActionKey = VirtualKeyCode.VK_A;
 				var dockActionKey = VirtualKeyCode.VK_D;
 
 				// EMERGENCY RETREAT
-				if (dockStation != null && (listOverviewEntryEnemies?.Length ?? 0) > 0)
+				if (dockStation != null && EmergencyRetreat)
 				{
 					yield return new BotTask() { Effects = new[] { dockActionKey.KeyDown(), dockStation.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left), dockActionKey.KeyUp() } };
 					yield break;

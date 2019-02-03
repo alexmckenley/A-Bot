@@ -4,6 +4,10 @@
 	{
 		public string RetreatBookmark;
 
+		public string RetreatType;
+
+		public string AvoidShipType;
+
 		public string[] ModuleActivePermanentSetTitlePattern;
 
 		public string[] CloakyCampers;

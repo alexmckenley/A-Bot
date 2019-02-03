@@ -41,6 +41,26 @@ namespace Sanderling.ABot.Bot.Task
 			return 1 == listParticipantNeutralOrEnemy?.Length;
 		}
 
+		static public bool OverviewIsClean(Bot bot, IEnumerable<Sanderling.Parse.IOverviewEntry> list)
+		{
+			if (null == list)
+				return false;
+
+			var avoidShipType = bot?.ConfigSerialAndStruct.Value?.AvoidShipType;
+
+			if (null == avoidShipType)
+				return true;
+
+			var foundShips = list
+				?.Where(entry => (entry?.Type?.RegexMatchSuccessIgnoreCase(avoidShipType) ?? false) || (entry?.ListBackgroundColor?.Any(bot.IsEnemyBackgroundColor) ?? false))
+				?.ToArray();
+
+			if ((foundShips?.Length ?? 0) > 0)
+				return false;
+
+			return true;
+		}
+
 		public IEnumerable<IBotTask> Component
 		{
 			get
@@ -90,9 +110,14 @@ namespace Sanderling.ABot.Bot.Task
 				var currentHullPercent = (memoryMeasurement?.ShipUi?.HitpointsAndEnergy?.Struct ?? 0) / 10;
 				var safeShield = currentShieldPercent > (shieldRetreatPercent ?? -1);
 				var safeArmor = currentArmorPercent > (armorRetreatPercent ?? -1);
-				var safeHull = currentHullPercent > (hullRetreatPercent ?? 70);
+				var safeHull = currentHullPercent > (hullRetreatPercent ?? -1);
 
-				if (!impendingDowntime && sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)))
+				var overview =
+					memoryMeasurement?.WindowOverview?.FirstOrDefault()?.ListView?.Entry;
+
+				var overviewIsClean = OverviewIsClean(Bot, overview);
+
+				if (!impendingDowntime && sessionDurationSufficient && ((memoryMeasurement?.IsDocked ?? false) || (safeShield && safeArmor && safeHull)) && (charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow)) && overviewIsClean)
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;
@@ -102,6 +127,7 @@ namespace Sanderling.ABot.Bot.Task
 				yield return new RetreatTask
 				{
 					Bot = Bot,
+					EmergencyRetreat = !overviewIsClean,
 				};
 			}
 		}
