@@ -37,8 +37,21 @@ namespace Sanderling.ABot.Bot.Task
 				?.Where(participant => participant.IsNeutralOrEnemy())
 				?.ToArray();
 
+			// Report intel if number of enemies in local is 4+
+			var numNeutralOrEnemy = listParticipantNeutralOrEnemy?.Length ?? 0;
+			if (numNeutralOrEnemy >= 5)
+			{
+				var gangCooldownMinutes = bot?.ConfigSerialAndStruct.Value?.GangCooldownMinutes ?? 20;
+				var cooldownUntil = DateTime.UtcNow.AddMinutes(gangCooldownMinutes);
+				if (cooldownUntil > bot.saveShipCooldown.AddMinutes(1))
+				{
+					bot.saveShipCooldown = cooldownUntil;
+					bot.cooldownReason = $"{numNeutralOrEnemy - 1} man gang detected! Dock up.☢";
+				}
+			}
+
 			//	we expect own char to show up there as well so there has to be one participant with neutral or enemy flag.
-			return 1 == listParticipantNeutralOrEnemy?.Length;
+			return numNeutralOrEnemy == 1;
 		}
 
 		static public bool OverviewIsClean(Bot bot, IEnumerable<Sanderling.Parse.IOverviewEntry> list)
@@ -52,6 +65,7 @@ namespace Sanderling.ABot.Bot.Task
 				return true;
 
 			var foundShips = list
+				?.Where(entry => !(entry?.ListBackgroundColor?.Any(bot.IsFriendBackgroundColor) ?? false))
 				?.Where(entry => (entry?.Type?.RegexMatchSuccessIgnoreCase(avoidShipType) ?? false) || (entry?.ListBackgroundColor?.Any(bot.IsEnemyBackgroundColor) ?? false))
 				?.ToArray();
 
@@ -62,7 +76,7 @@ namespace Sanderling.ABot.Bot.Task
 				if (cooldownUntil > bot.saveShipCooldown.AddMinutes(1))
 				{
 					bot.saveShipCooldown = cooldownUntil;
-					bot.cooldownReason = $"ENEMY SIGHTED: {foundShips?.FirstOrDefault()?.Name}({foundShips?.FirstOrDefault()?.Type})";
+					bot.cooldownReason = $"Enemy sighted: {foundShips?.FirstOrDefault()?.Name}({foundShips?.FirstOrDefault()?.Type})";
 				}
 				return false;
 			}

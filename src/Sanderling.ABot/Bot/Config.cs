@@ -29,5 +29,7 @@
 		public int? RandomSeed;
 
 		public int? EnemySightedCooldownMinutes;
+
+		public int? GangCooldownMinutes;
 	}
 }
