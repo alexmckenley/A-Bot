@@ -17,7 +17,9 @@ namespace Sanderling.ABot.Bot
 
 		public BotStepInput StepLastInput { private set; get; }
 
-		public PropertyGenTimespanInt64<BotStepResult> StepLastResult { private set; get; }
+		public PropertyGenTimespanInt64<BotStepResult> StepLastResultTimespan { private set; get; }
+
+		public BotStepResult StepLastResult { private set; get; }
 
 		int motionId;
 
@@ -130,7 +132,9 @@ namespace Sanderling.ABot.Bot
 
 			MemorizeStepResult(stepResult);
 
-			StepLastResult = new PropertyGenTimespanInt64<BotStepResult>(stepResult, beginTimeMilli, GetTimeMilli());
+			StepLastResultTimespan = new PropertyGenTimespanInt64<BotStepResult>(stepResult, beginTimeMilli, GetTimeMilli());
+
+			StepLastResult = stepResult;
 
 			++stepIndex;
 

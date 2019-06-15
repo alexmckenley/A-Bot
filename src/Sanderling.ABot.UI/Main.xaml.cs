@@ -33,7 +33,7 @@ namespace Sanderling.ABot.UI
 
 			InterfaceHeader?.SetStatus(Interface.InterfaceStatusEnum());
 
-			BotStepResultTextBox.Text = bot?.StepLastResult?.RenderBotStepToUIText();
+			BotStepResultTextBox.Text = bot?.StepLastResultTimespan?.RenderBotStepToUIText();
 		}
 
 		private void BotStepResultCopyToClipboardButton_Click(object sender, RoutedEventArgs e)

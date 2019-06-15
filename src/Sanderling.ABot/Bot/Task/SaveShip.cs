@@ -142,6 +142,17 @@ namespace Sanderling.ABot.Bot.Task
 				var overviewIsClean = (memoryMeasurement?.IsDocked ?? false) || OverviewIsClean(Bot, overview);
 				var chatIsClean = charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow);
 
+				var intelChannel = Bot?.ConfigSerialAndStruct.Value?.IntelChannel ?? @"SOUR-Intel";
+				var paused =
+					memoryMeasurement?.WindowChatChannel
+					?.Where(window => window?.Caption?.RegexMatchSuccessIgnoreCase(intelChannel) ?? false)
+					?.FirstOrDefault()?.LabelText?.LastOrDefault()?.Text?.RegexMatchSuccessIgnoreCase(@"--paused--") ?? false; 
+				if (paused)
+					yield return new DiagnosticTask
+					{
+						MessageText = $"Docking, paused.",
+					};
+
 				var coolingDown = Bot.saveShipCooldown > DateTime.UtcNow;
 				if (coolingDown)
 					yield return new DiagnosticTask
@@ -149,7 +160,7 @@ namespace Sanderling.ABot.Bot.Task
 						MessageText = $"Cooling down due to: {Bot.cooldownReason}",
 					};
 
-				if (!coolingDown && !impendingDowntime && sessionDurationSufficient && shipHealthOK && chatIsClean && overviewIsClean)
+				if (!paused && !coolingDown && !impendingDowntime && sessionDurationSufficient && shipHealthOK && chatIsClean && overviewIsClean)
 				{
 					AllowRoam = true;
 					AllowAnomalyEnter = AllowAnomalyEnterSessionDurationMin <= memoryMeasurement?.SessionDurationRemaining;

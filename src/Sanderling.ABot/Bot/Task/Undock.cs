@@ -1,4 +1,5 @@
 ﻿using System;
+using BotEngine.Common;
 using System.Collections.Generic;
 using System.Linq;
 using Sanderling.Motor;
@@ -28,7 +29,9 @@ namespace Sanderling.ABot.Bot.Task
 				if (bot.saveShipCooldown > DateTime.UtcNow)
 					yield break;
 
-				yield return memoryMeasurement?.WindowStation?.FirstOrDefault()?.UndockButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
+				yield return memoryMeasurement?.WindowStation?.FirstOrDefault()
+					?.ButtonText?.FirstOrDefault(entry => entry?.Text?.RegexMatchSuccessIgnoreCase(@"undock") ?? false)
+					?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
 			}
 		}
 	}

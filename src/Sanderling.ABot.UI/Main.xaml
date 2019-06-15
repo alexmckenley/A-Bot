@@ -8,7 +8,7 @@
              xmlns:Sanderling.UI="clr-namespace:Sanderling.UI;assembly=Sanderling.UI"
              xmlns:BotEngine.UI.ViewModel="clr-namespace:BotEngine.UI.ViewModel;assembly=BotEngine.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="444" d:DesignWidth="555">
+             d:DesignHeight="644" d:DesignWidth="555">
 	<UserControl.Resources>
 		<ResourceDictionary Source="pack://application:,,,/Sanderling.ABot.UI;component/resource.xaml"></ResourceDictionary>
 	</UserControl.Resources>

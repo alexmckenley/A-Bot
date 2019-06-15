@@ -21,8 +21,13 @@ namespace Sanderling.ABot.Exe
 
 		public void ProcessInput()
 		{
-			if (App.SetKeyBotMotionDisable?.Any(setKey => setKey?.All(key => Keyboard.IsKeyDown(key)) ?? false) ?? false)
+
+			if (App.SetKeyBotMotionEnable?.Any(setKey => setKey?.All(key => Keyboard.IsKeyDown(key)) ?? false) ?? false)
+				Main?.BotMotionEnable();
+			else if (App.SetKeyBotMotionDisable?.Any(setKey => setKey?.All(key => Keyboard.IsKeyDown(key)) ?? false) ?? false)
 				Main?.BotMotionDisable();
+
+
 		}
 	}
 }

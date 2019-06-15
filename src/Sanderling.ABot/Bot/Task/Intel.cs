@@ -49,6 +49,11 @@ namespace Sanderling.ABot.Bot.Task
 				}
 
 				var lastMessage = intelChatWindow?.LabelText?.LastOrDefault()?.Text;
+
+				var paused = lastMessage.RegexMatchSuccessIgnoreCase(@"--paused--");
+				if (paused)
+					yield break;
+
 				Match match = Regex.Match(lastMessage, @"--(.*)--");
 				var lastDateStr = match?.Groups?[1]?.Value;
 

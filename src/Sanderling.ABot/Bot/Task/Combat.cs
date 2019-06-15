@@ -80,16 +80,29 @@ namespace Sanderling.ABot.Bot.Task
 
 				var numCurrentTargets = listOverviewEntryToAttack?.Where(entry => ((entry?.MeTargeted ?? false) || (entry?.MeTargeting ?? false))).Count();
 
-				var listOverviewEntryFriends =
+				var intelChannel = bot?.ConfigSerialAndStruct.Value?.IntelChannel ?? @"SOUR-Intel";
+				var intelCloseFriends =
+					memoryMeasurement?.WindowChatChannel
+					?.Where(window => window?.Caption?.RegexMatchSuccessIgnoreCase(intelChannel) ?? false)
+					?.FirstOrDefault()?.ParticipantView?.Entry
+					?.Select(participant => participant?.NameLabel?.Text)
+					?.ToArray();
+
+				var listOverviewEntryAllies =
 					memoryMeasurement?.WindowOverview?.FirstOrDefault().ListView?.Entry
 					?.Where(entry => (entry?.DistanceMax ?? int.MaxValue) < 150000)
 					?.Where(entry => entry?.ListBackgroundColor?.Any(bot.IsFriendBackgroundColor) ?? false)
 					?.ToArray();
 
+				var listOverviewEntryAlliesCloseFriendsFiltered =
+					listOverviewEntryAllies
+					?.Where(entry => !(intelCloseFriends?.Contains(entry?.Name) ?? false))
+					?.ToArray();
+
 				var beingAttacked = listOverviewEntryToAttack?.Any(entry => entry?.IsAttackingMe ?? false) ?? false;
 
 				// Avoid anom if friend is there
-				if (droneInLocalSpaceCount == 0 && (listOverviewEntryFriends?.Length ?? 0) > 0)
+				if (droneInLocalSpaceCount == 0 && (listOverviewEntryAlliesCloseFriendsFiltered?.Length ?? 0) > 0)
 				{
 					Completed = true;
 					yield break;
@@ -107,7 +120,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				if (listOverviewEntryToAttack?.Length > 0)
 				{
-					if (0 < droneInBayCount && droneInLocalSpaceCount < 5 && beingAttacked)
+					if (0 < droneInBayCount && droneInLocalSpaceCount < 5 && (beingAttacked || ((listOverviewEntryAllies?.Length ?? 0) > 0)))
 						yield return droneGroupInBay.ClickMenuEntryByRegexPattern(bot, @"launch");
 
 					if (droneInLocalSpaceIdle && shouldAttackTarget)

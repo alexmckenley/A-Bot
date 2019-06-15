@@ -14,6 +14,14 @@ namespace Sanderling.ABot.Exe
 			new[] { Key.RightCtrl, Key.RightAlt },
 		};
 
+		static public IEnumerable<IEnumerable<Key>> SetKeyBotMotionEnable => new[]
+		{
+			new[] { Key.LeftCtrl, Key.LeftAlt, Key.LeftShift },
+			new[] { Key.LeftCtrl, Key.RightAlt, Key.LeftShift },
+			new[] { Key.RightCtrl, Key.LeftAlt, Key.LeftShift },
+			new[] { Key.RightCtrl, Key.RightAlt, Key.LeftShift },
+		};
+
 		MainWindow Window => MainWindow as MainWindow;
 
 		Main MainControl => Window?.Main;

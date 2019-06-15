@@ -7,11 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sanderling.ABot.Exe
 {
 	partial class App
 	{
+		private static Mutex motionMutex = new Mutex(false, "SanderlingAbotAppMutex");
+
 		readonly object botLock = new object();
 
 		readonly Bot.Bot bot = new Bot.Bot();
@@ -54,7 +57,7 @@ namespace Sanderling.ABot.Exe
 
 				BotConfigLoad();
 
-				var stepResult = bot.Step(new Bot.BotStepInput
+				bot.Step(new Bot.BotStepInput
 				{
 					TimeMilli = time.Value,
 					FromProcessMemoryMeasurement = memoryMeasurementLast,
@@ -63,7 +66,16 @@ namespace Sanderling.ABot.Exe
 				});
 
 				if (motionEnable)
-					BotMotion(memoryMeasurementLast, stepResult?.ListMotion);
+					Task.Run(() =>
+					{
+						App.motionMutex.WaitOne();
+						botLock.WhenLockIsAvailableEnter(30000, () =>
+						{
+							BotMotion(this.MemoryMeasurementLast, bot.StepLastResult?.ListMotion);
+							App.motionMutex.ReleaseMutex();
+							Thread.Sleep(FromMotionToMeasurementDelayMilli);
+						});
+					});
 			});
 		}
 
@@ -99,8 +111,6 @@ namespace Sanderling.ABot.Exe
 			}
 
 			BotStepLastMotionResult = new PropertyGenTimespanInt64<Bot.MotionResult[]>(listMotionResult.ToArray(), startTime, GetTimeStopwatch());
-
-			Thread.Sleep(FromMotionToMeasurementDelayMilli);
 		}
 
 		void BotConfigLoad()
