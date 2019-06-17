@@ -2,6 +2,7 @@
 using BotEngine.Interface;
 using Sanderling.Interface.MemoryStruct;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sanderling.ABot.Exe
@@ -21,7 +22,9 @@ namespace Sanderling.ABot.Exe
 	{
         readonly Sensor sensor = new Sensor();
 
-        FromProcessMeasurement<IMemoryMeasurement> MemoryMeasurementLast;
+		private static Mutex measurementMutex = new Mutex(false, "SanderlingAbotMeasurementMutex");
+
+		FromProcessMeasurement<IMemoryMeasurement> MemoryMeasurementLast;
 
 		readonly SimpleInterfaceServerDispatcher SensorServerDispatcher = new SimpleInterfaceServerDispatcher
 		{
@@ -40,7 +43,16 @@ namespace Sanderling.ABot.Exe
 
 			if (eveOnlineClientProcessId.HasValue && measurementRequestTime <= GetTimeStopwatch())
 				if (MemoryMeasurementRequestRateLimit.AttemptPass(GetTimeStopwatch(), 700))
-					Task.Run(() => botLock.IfLockIsAvailableEnter(() => MeasurementMemoryTake(eveOnlineClientProcessId.Value, measurementRequestTime)));
+				{
+					Task.Run(() => {
+						App.measurementMutex.WaitOne();
+						botLock.WhenLockIsAvailableEnter(30000, () =>
+						{
+							MeasurementMemoryTake(eveOnlineClientProcessId.Value, measurementRequestTime);
+							App.measurementMutex.ReleaseMutex();
+						});
+					});
+				}
 		}
 
 		void MeasurementMemoryTake(int processId, Int64 measurementBeginTimeMinMilli)

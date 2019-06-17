@@ -13,7 +13,7 @@ namespace Sanderling.ABot.Exe
 {
 	partial class App
 	{
-		private static Mutex motionMutex = new Mutex(false, "SanderlingAbotAppMutex");
+		private static Mutex motionMutex = new Mutex(false, "SanderlingAbotMotionMutex");
 
 		readonly object botLock = new object();
 
