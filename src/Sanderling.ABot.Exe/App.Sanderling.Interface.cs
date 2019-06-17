@@ -22,6 +22,8 @@ namespace Sanderling.ABot.Exe
 	{
         readonly Sensor sensor = new Sensor();
 
+		private bool waitingForMeasurementLock = false;
+
 		private static Mutex measurementMutex = new Mutex(false, "SanderlingAbotMeasurementMutex");
 
 		FromProcessMeasurement<IMemoryMeasurement> MemoryMeasurementLast;
@@ -42,14 +44,16 @@ namespace Sanderling.ABot.Exe
 			var measurementRequestTime = MeasurementRequestTime() ?? 0;
 
 			if (eveOnlineClientProcessId.HasValue && measurementRequestTime <= GetTimeStopwatch())
-				if (MemoryMeasurementRequestRateLimit.AttemptPass(GetTimeStopwatch(), 700))
+				if (MemoryMeasurementRequestRateLimit.AttemptPass(GetTimeStopwatch(), 700) && !this.waitingForMeasurementLock)
 				{
+					this.waitingForMeasurementLock = true;
 					Task.Run(() => {
 						App.measurementMutex.WaitOne();
 						botLock.WhenLockIsAvailableEnter(30000, () =>
 						{
 							MeasurementMemoryTake(eveOnlineClientProcessId.Value, measurementRequestTime);
 							App.measurementMutex.ReleaseMutex();
+							this.waitingForMeasurementLock = false;
 						});
 					});
 				}
