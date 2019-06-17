@@ -38,7 +38,7 @@ namespace Sanderling.ABot.Bot.Task
 
 				var processID = memoryMeasurementAtTime?.ProcessId ?? 0;
 				var configSeed = bot?.ConfigSerialAndStruct.Value?.RandomSeed ?? processID;
-				var intervalSeed = Int32.Parse(DateTime.Now.ToString("ss")) / 20; // New seed every 20 seconds
+				var intervalSeed = Int32.Parse(DateTime.Now.ToString("ss")) / 10; // New seed every 10 seconds
 				var r = new Random(intervalSeed + configSeed);
 
 				var anoms = bot?.ConfigSerialAndStruct.Value?.Anoms ?? @"forsaken rally";
@@ -65,7 +65,7 @@ namespace Sanderling.ABot.Bot.Task
 					{
 						RootUIElement = scanResultCombatSite,
 						Bot = bot,
-						ListMenuListPriorityEntryRegexPattern = new[] { new[] { @"warp to within$" }, new[] { $"within {warpToWithinKM} [m|km]" } },
+						ListMenuListPriorityEntryRegexPattern = new[] { new[] { $@"warp to within \d+ [m|km]" }},
 					};
 				}
 

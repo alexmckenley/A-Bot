@@ -15,6 +15,8 @@ namespace Sanderling.ABot.Exe
 	{
 		private static Mutex motionMutex = new Mutex(false, "SanderlingAbotMotionMutex");
 
+		private static Mutex configMutex = new Mutex(false, "SanderlingAbotConfigMutex");
+
 		private bool waitingForMotionLock = false;
 
 		readonly object botLock = new object();
@@ -121,6 +123,9 @@ namespace Sanderling.ABot.Exe
 
 		void BotConfigLoad()
 		{
+			// Wait for configMutex before loading config
+			App.configMutex.WaitOne();
+
 			Exception exception = null;
 			string configString = null;
 			var configFilePath = AssemblyDirectoryPath.PathToFilesysChild(BotConfigFileName);
@@ -138,6 +143,8 @@ namespace Sanderling.ABot.Exe
 			BotConfigLoaded = new PropertyGenTimespanInt64<KeyValuePair<Exception, StringAtPath>>(new KeyValuePair<Exception, StringAtPath>(
 				exception,
 				new StringAtPath { Path = configFilePath, String = configString }), GetTimeStopwatch());
+
+			App.configMutex.ReleaseMutex();
 		}
 	}
 }

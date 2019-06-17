@@ -30,7 +30,7 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 
 				yield return memoryMeasurement?.WindowStation?.FirstOrDefault()
-					?.ButtonText?.FirstOrDefault(entry => entry?.Text?.RegexMatchSuccessIgnoreCase(@"undock") ?? false)
+					?.ButtonText?.FirstOrDefault(entry => entry?.Text?.RegexMatchSuccessIgnoreCase(@"\Sundock") ?? false)
 					?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
 			}
 		}
