@@ -48,7 +48,7 @@ namespace Sanderling.ABot.Bot.Task
 					yield break;
 				}
 
-				var lastMessage = intelChatWindow?.LabelText?.LastOrDefault()?.Text;
+				var lastMessage = intelChatWindow?.MessageView?.Entry?.LastOrDefault()?.LabelText?.LastOrDefault()?.Text;
 
 				var paused = lastMessage.RegexMatchSuccessIgnoreCase(@"--paused--");
 				if (paused)
