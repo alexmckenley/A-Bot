@@ -143,10 +143,11 @@ namespace Sanderling.ABot.Bot.Task
 				var chatIsClean = charIsLocatedInHighsec || ChatIsClean(Bot, localChatWindow);
 
 				var intelChannel = Bot?.ConfigSerialAndStruct.Value?.IntelChannel ?? @"SOUR-Intel";
+
 				var paused =
 					memoryMeasurement?.WindowChatChannel
-					?.Where(window => window?.Caption?.RegexMatchSuccessIgnoreCase(intelChannel) ?? false)
-					?.FirstOrDefault()?.LabelText?.LastOrDefault()?.Text?.RegexMatchSuccessIgnoreCase(@"--paused--") ?? false; 
+					?.Where(window => window?.Caption?.RegexMatchSuccessIgnoreCase(intelChannel) ?? false)?.FirstOrDefault()
+					?.MessageView?.Entry?.LastOrDefault()?.LabelText?.LastOrDefault()?.Text.RegexMatchSuccessIgnoreCase(@"--paused--") ?? false; 
 				if (paused)
 					yield return new DiagnosticTask
 					{

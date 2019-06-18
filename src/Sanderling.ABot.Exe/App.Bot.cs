@@ -17,8 +17,6 @@ namespace Sanderling.ABot.Exe
 
 		private static Mutex configMutex = new Mutex(false, "SanderlingAbotConfigMutex");
 
-		private bool waitingForMotionLock = false;
-
 		readonly object botLock = new object();
 
 		readonly Bot.Bot bot = new Bot.Bot();
@@ -69,17 +67,15 @@ namespace Sanderling.ABot.Exe
 					ConfigSerial = BotConfigLoaded?.Value.Value,
 				});
 
-				if (motionEnable && !this.waitingForMotionLock)
+				if (motionEnable)
 				{
-					this.waitingForMotionLock = true;
 					Task.Run(() =>
 					{
 						App.motionMutex.WaitOne();
-						botLock.WhenLockIsAvailableEnter(30000, () =>
+						botLock.WhenLockIsAvailableEnter(90000, () =>
 						{
 							BotMotion(this.MemoryMeasurementLast, bot.StepLastResult?.ListMotion);
 							App.motionMutex.ReleaseMutex();
-							this.waitingForMotionLock = false;
 							Thread.Sleep(FromMotionToMeasurementDelayMilli);
 						});
 					});

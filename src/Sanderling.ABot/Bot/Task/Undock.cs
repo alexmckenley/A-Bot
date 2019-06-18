@@ -11,12 +11,9 @@ namespace Sanderling.ABot.Bot.Task
 	{
 		public Bot bot;
 
-		public IEnumerable<IBotTask> Component => null;
-
-		public IEnumerable<MotionParam> Effects
+		public IEnumerable<IBotTask> Component
 		{
-			get
-			{
+			get {
 				var memoryMeasurementAtTime = bot?.MemoryMeasurementAtTime;
 				var memoryMeasurement = memoryMeasurementAtTime?.Value;
 
@@ -29,10 +26,26 @@ namespace Sanderling.ABot.Bot.Task
 				if (bot.saveShipCooldown > DateTime.UtcNow)
 					yield break;
 
-				yield return memoryMeasurement?.WindowStation?.FirstOrDefault()
-					?.ButtonText?.FirstOrDefault(entry => entry?.Text?.RegexMatchSuccessIgnoreCase(@"\Sundock") ?? false)
-					?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left);
+				var undockButton = memoryMeasurement?.WindowStation?.FirstOrDefault()
+				?.ButtonText?.FirstOrDefault(entry => entry?.Text?.RegexMatchSuccessIgnoreCase(@"\Sundock") ?? false);
+
+				if (undockButton == null)
+				{
+					yield return new DiagnosticTask
+					{
+						MessageText = @"Unable to find Undock button",
+					};
+					yield break;
+				}
+
+				yield return new BotTask
+				{
+					Effects = new[] {
+					undockButton?.MouseClick(BotEngine.Motor.MouseButtonIdEnum.Left) }
+				};
 			}
 		}
+
+		public IEnumerable<MotionParam> Effects => null;
 	}
 }
