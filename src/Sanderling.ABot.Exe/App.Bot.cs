@@ -99,6 +99,16 @@ namespace Sanderling.ABot.Exe
 
 			var startTime = GetTimeStopwatch();
 
+			BotEngine.WinApi.User32.SetForegroundWindow(process.MainWindowHandle);
+
+			var PreviousForegroundWindowHandle = BotEngine.WinApi.User32.GetForegroundWindow();
+
+			while (PreviousForegroundWindowHandle != process.MainWindowHandle)
+			{
+				Thread.Sleep(50);
+				PreviousForegroundWindowHandle = BotEngine.WinApi.User32.GetForegroundWindow();
+			}
+
 			var motor = new WindowMotor(process.MainWindowHandle);
 
 			var listMotionResult = new List<Bot.MotionResult>();
