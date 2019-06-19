@@ -103,10 +103,12 @@ namespace Sanderling.ABot.Exe
 
 			var PreviousForegroundWindowHandle = BotEngine.WinApi.User32.GetForegroundWindow();
 
-			while (PreviousForegroundWindowHandle != process.MainWindowHandle)
+			if (PreviousForegroundWindowHandle != process.MainWindowHandle)
 			{
-				Thread.Sleep(50);
+				Thread.Sleep(100);
 				PreviousForegroundWindowHandle = BotEngine.WinApi.User32.GetForegroundWindow();
+				if (PreviousForegroundWindowHandle != process.MainWindowHandle)
+					return;
 			}
 
 			var motor = new WindowMotor(process.MainWindowHandle);
