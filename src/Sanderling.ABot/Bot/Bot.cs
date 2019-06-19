@@ -158,9 +158,7 @@ namespace Sanderling.ABot.Bot
 			yield return this.EnsureIsActive(MemoryMeasurementAccu?.ShipUiModule
 				?.Where(module => module.ShouldBeActivePermanent(this)));
 
-			var moduleUnknown = MemoryMeasurementAccu?.ShipUiModule?.FirstOrDefault(module => null == module?.TooltipLast?.Value);
-
-			yield return new BotTask { Effects = new[] { moduleUnknown?.MouseMove() } };
+			yield return new ModuleHoverTask { bot = this };
 
 			var afterburnerTask = new AfterburnerTask { bot = this };
 

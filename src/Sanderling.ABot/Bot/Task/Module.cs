@@ -74,4 +74,23 @@ namespace Sanderling.ABot.Bot.Task
 			}
 		}
 	}
+
+	public class ModuleHoverTask : IBotTask
+	{
+		public Bot bot;
+
+		public IEnumerable<IBotTask> Component
+		{
+			get
+			{
+				var memoryMeasurementAccu = bot?.MemoryMeasurementAccu;
+
+				var moduleUnknown = memoryMeasurementAccu?.ShipUiModule?.FirstOrDefault(module => null == module?.TooltipLast?.Value);
+
+				yield return new BotTask { Effects = new[] { moduleUnknown?.MouseMove() } };
+			}
+		}
+
+		public IEnumerable<MotionParam> Effects => null;
+	}
 }
